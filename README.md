@@ -131,7 +131,7 @@ Rumuskan masalah dalam kerangka *Learning Problem*:
 |----------|--------------------|--------------|
 | **Target** | Apa yang diprediksi? Jenis tugas (klasifikasi biner/multikelas, regresi, forecasting, clustering, dll.)? | [ Klasifikasi biner. Target yang diprediksi adalah apakah akan terjadi kemunculan titik api (hotspot) pada hari dan wilayah tertentu (1 = Ya/Risiko Tinggi, 0 = Tidak/Risiko Rendah). ] |
 | **Objective** | Apa yang dioptimalkan/diminimalkan secara matematis (misal: cross-entropy, MSE)? Metrik keberhasilan utama? | [ Meminimalkan Binary Cross-Entropy Loss. Metrik keberhasilan utama adalah F1-Score dan Recall, karena penting untuk meminimalkan False Negatives (gagal memprediksi kebakaran). ] |
-| **Data** | Sumber, ukuran, jenis, dan asumsi tentang data (i.i.d.? distribusi train vs test?) | [ Data merupakan gabungan cuaca harian (ERA5-Land) berukuran 17.226 baris dan 11 kolom, serta data titik api (NASA FIRMS) yang bersifat spatiotemporal (tabular). Diasumsikan data terdistribusi secara Independent and Identically Distributed (i.i.d) untuk model klasifikasi standar, dengan rentang waktu 2019-2026. ] |
+| **Data** | Sumber, ukuran, jenis, dan asumsi tentang data (i.i.d.? distribusi train vs test?) | [ Data merupakan gabungan cuaca harian (Historical Weather API) berukuran 17.226 baris dan 11 kolom, serta data titik api (NASA FIRMS) yang bersifat spatiotemporal (tabular). Diasumsikan data terdistribusi secara Independent and Identically Distributed (i.i.d) untuk model klasifikasi standar, dengan rentang waktu 2019-2026. ] |
 
 ### 3.3 Goals
 
@@ -233,7 +233,7 @@ https://firms.modaps.eosdis.nasa.gov/country/
 
 Deskripsi Dataset:
 
-Dataset 1 – Data Cuaca dan Kondisi Lingkungan (ERA5-Land)
+Dataset 1 – Data Cuaca dan Kondisi Lingkungan (Historical Weather API)
 - Jumlah baris (rows): 17,226 baris.
 - Jumlah kolom (features): 11 kolom.
 - Tipe data: Tabular / Spatiotemporal.
