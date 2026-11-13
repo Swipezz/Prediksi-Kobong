@@ -4,11 +4,13 @@
 Prediksi Resiko Titik Api Harian Untuk Peringatan Dini Karhutla Di Sumatra Dan Kalimantan
 
 **Nama Mahasiswa:**
+
 Adam Noverian
 
 Fachrozzi Rizky Wibowo
 
 **NIM:**
+
 244311033
 
 244311041
