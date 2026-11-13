@@ -81,7 +81,7 @@ Pada proyek ini, mahasiswa diharapkan dapat:
 ### 2.1 Latar Belakang
 Kebakaran hutan dan lahan (karhutla) merupakan permasalahan lingkungan yang sering terjadi di Sumatra dan Kalimantan. Dampaknya meliputi kerusakan ekosistem, pencemaran udara, dan gangguan kesehatan masyarakat. Salah satu faktor yang berkaitan dengan risiko kebakaran adalah suhu udara yang tinggi dan dapat mempercepat pengeringan vegetasi (Aflahah et al., 2019).
 
-Proyek ini bertujuan membangun model machine learning untuk memprediksi risiko kemunculan titik api harian menggunakan data hotspot NASA FIRMS dan suhu udara ERA5-Land. Hasil prediksi diharapkan dapat mendukung peringatan dini dan mitigasi karhutla, sekaligus berkontribusi pada SDG 13 (Climate Action) dan SDG 15 (Life on Land).
+Proyek ini bertujuan membangun model machine learning untuk memprediksi risiko kemunculan titik api harian menggunakan data hotspot NASA FIRMS dan suhu udara Open-Meteo Historical Weather (ERA5). Hasil prediksi diharapkan dapat mendukung peringatan dini dan mitigasi karhutla, sekaligus berkontribusi pada SDG 13 (Climate Action) dan SDG 15 (Life on Land).
 
 Referensi:Aflahah, E., et al. (2019). Pendugaan hotspot sebagai indikator kebakaran hutan di Kalimantan berdasarkan faktor iklim. Jurnal Pengelolaan Sumberdaya Alam dan Lingkungan, 9(2), 405–418. https://doi.org/10.29244/jpsl.9.2.405-418
 
@@ -103,7 +103,7 @@ Ide proyek **berasal dari mahasiswa** dan harus selaras dengan **salah satu** da
 Ide proyek berasal dari permasalahan karhutla yang berulang di Indonesia, khususnya Sumatra dan Kalimantan, serta kebutuhan akan sistem peringatan dini berbasis data untuk mendukung mitigasi kebakaran hutan dan lahan.
 
 ### 2.3 Ringkasan Alur Lifecycle Proyek
-Proyek ini dimulai dari tahap Learn (L) dengan mengidentifikasi permasalahan karhutla dan mengumpulkan dataset NASA FIRMS serta ERA5-Land. Tahap Model (M) dilakukan melalui preprocessing data, penggabungan dataset, dan pelatihan model Machine Learning. Tahap Operationalize (O) mencakup evaluasi dan penyajian hasil prediksi risiko titik api dalam bentuk visualisasi. Terakhir, tahap Product (P) menghasilkan prototipe sistem peringatan dini. Iterasi dilakukan dengan memperbaiki fitur, parameter, dan model berdasarkan hasil evaluasi agar akurasi prediksi meningkat.
+Proyek ini dimulai dari tahap Learn (L) dengan mengidentifikasi permasalahan karhutla dan mengumpulkan dataset NASA FIRMS serta Open-Meteo Historical Weather (ERA5). Tahap Model (M) dilakukan melalui preprocessing data, penggabungan dataset, dan pelatihan model Machine Learning. Tahap Operationalize (O) mencakup evaluasi dan penyajian hasil prediksi risiko titik api dalam bentuk visualisasi. Terakhir, tahap Product (P) menghasilkan prototipe sistem peringatan dini. Iterasi dilakukan dengan memperbaiki fitur, parameter, dan model berdasarkan hasil evaluasi agar akurasi prediksi meningkat.
 
 ## 3. BUSINESS UNDERSTANDING / PROBLEM UNDERSTANDING  **[L]**
 
@@ -131,7 +131,7 @@ Rumuskan masalah dalam kerangka *Learning Problem*:
 |----------|--------------------|--------------|
 | **Target** | Apa yang diprediksi? Jenis tugas (klasifikasi biner/multikelas, regresi, forecasting, clustering, dll.)? | [ Klasifikasi biner. Target yang diprediksi adalah apakah akan terjadi kemunculan titik api (hotspot) pada hari dan wilayah tertentu (1 = Ya/Risiko Tinggi, 0 = Tidak/Risiko Rendah). ] |
 | **Objective** | Apa yang dioptimalkan/diminimalkan secara matematis (misal: cross-entropy, MSE)? Metrik keberhasilan utama? | [ Meminimalkan Binary Cross-Entropy Loss. Metrik keberhasilan utama adalah F1-Score dan Recall, karena penting untuk meminimalkan False Negatives (gagal memprediksi kebakaran). ] |
-| **Data** | Sumber, ukuran, jenis, dan asumsi tentang data (i.i.d.? distribusi train vs test?) | [ Data merupakan gabungan cuaca harian (Historical Weather API) berukuran 17.226 baris dan 11 kolom, serta data titik api (NASA FIRMS) yang bersifat spatiotemporal (tabular). Diasumsikan data terdistribusi secara Independent and Identically Distributed (i.i.d) untuk model klasifikasi standar, dengan rentang waktu 2019-2026. ] |
+| **Data** | Sumber, ukuran, jenis, dan asumsi tentang data (i.i.d.? distribusi train vs test?) | [ Data merupakan gabungan cuaca harian (Open-Meteo Historical Weather (ERA5)) berukuran 17.226 baris dan 11 kolom, serta data titik api (NASA FIRMS) yang bersifat spatiotemporal (tabular). Diasumsikan data terdistribusi secara Independent and Identically Distributed (i.i.d) untuk model klasifikasi standar, dengan rentang waktu 2019-2026. ] |
 
 ### 3.3 Goals
 
@@ -233,7 +233,7 @@ https://firms.modaps.eosdis.nasa.gov/country/
 
 Deskripsi Dataset:
 
-Dataset 1 – Data Cuaca dan Kondisi Lingkungan (Historical Weather API)
+Dataset 1 – Data Cuaca dan Kondisi Lingkungan (Open-Meteo Historical Weather (ERA5))
 - Jumlah baris (rows): 17,226 baris.
 - Jumlah kolom (features): 11 kolom.
 - Tipe data: Tabular / Spatiotemporal.
@@ -249,7 +249,7 @@ Dataset 2 – Data Titik Panas Kebakaran (NASA FIRMS VIIRS)
 
 ### 4.2 Deskripsi Fitur
 
- Dataset 1 – Data Cuaca dan Kondisi Lingkungan (ERA5-Land)
+ Dataset 1 – Data Cuaca dan Kondisi Lingkungan (Open-Meteo Historical Weather (ERA5))
 | Nama Fitur                   | Tipe Data | Deskripsi                                                                        | Contoh Nilai |
 | ---------------------------- | --------- | -------------------------------------------------------------------------------- | ------------ |
 | latitude                     | Float     | Garis lintang lokasi pengamatan                                                  | -3.26889     |
