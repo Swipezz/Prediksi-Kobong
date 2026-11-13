@@ -33,10 +33,10 @@ https://github.com/Swipezz/Prediksi-Kobong
 **Link Video Pembahasan:**
 
 **SDG yang Dipilih:**
-SDG 15 - Life on Land
+SDG 13 – Climate Action
 
 **Target SDG yang Relevan:**
-SDG 13 – Climate Action
+SDG 15 - Life on Land
 
 ## 0. KERANGKA ML LIFECYCLE (L-M-O-P)
 
