@@ -93,7 +93,7 @@ Ide proyek **berasal dari mahasiswa** dan harus selaras dengan **salah satu** da
 | Komponen | Pertanyaan Panduan | Jawaban Anda |
 |----------|--------------------|--------------|
 | **SDG yang dipilih** | Goal nomor berapa dan apa namanya? | [ 	SDG 13 – Climate Action (Penanganan Perubahan Iklim). ] |
-| **Target SDG** | Target (misal 3.4, 13.1) mana yang paling relevan? | [ Target 13.1: Memperkuat ketahanan dan kapasitas adaptasi terhadap bahaya terkait iklim dan bencana alam. ] |
+| **Target SDG** | Target (misal 3.4, 13.1) mana yang paling relevan? | [ Target 15.1: Melestarikan dan memulihkan ekosistem daratan serta memastikan pemanfaatan berkelanjutan terhadap hutan, lahan, dan keanekaragaman hayati.] |
 | **Masalah nyata** | Masalah konkret apa yang diangkat? Siapa yang terdampak? | [ 	Karhutla di Sumatra dan Kalimantan yang menyebabkan kerusakan hutan, pencemaran udara, dan gangguan kesehatan masyarakat. ] |
 | **Peran ML** | Mengapa ML/DL cocok? Apa keputusan atau proses yang dibantu? | [ 	Machine Learning digunakan untuk mempelajari pola hotspot dan suhu udara guna memprediksi risiko kemunculan titik api harian sebagai pendukung peringatan dini. ] |
 | **Indikator kontribusi** | Bagaimana hasil model berkontribusi pada target SDG (langsung/tidak langsung)? | [ Menghasilkan prediksi risiko berdasarkan lokasi dan tanggal sehingga wilayah berpotensi kebakaran dapat diidentifikasi lebih awal. ] |
