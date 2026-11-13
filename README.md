@@ -235,18 +235,18 @@ https://firms.modaps.eosdis.nasa.gov/country/
 Deskripsi Dataset:
 
 Dataset 1 – Data Cuaca dan Kondisi Lingkungan (ERA5-Land)
-- Jumlah baris (rows): Belum diketahui (contoh yang diberikan: 2 baris).
+- Jumlah baris (rows): 17,226 baris.
 - Jumlah kolom (features): 11 kolom.
-- Tipe data: Tabular / Time Series / Spatiotemporal.
-- Ukuran dataset: Belum diketahui (perlu memeriksa file dataset).
-- Format file: CSV (jika disimpan dalam format CSV).
+- Tipe data: Tabular / Spatiotemporal.
+- Ukuran dataset: 2.32 MB.
+- Format file: CSV.
 
 Dataset 2 – Data Titik Panas Kebakaran (NASA FIRMS VIIRS)
-- Jumlah baris (rows): Belum diketahui (contoh yang diberikan: 3 baris).
-- Jumlah kolom (features): 15 kolom.
+- Jumlah baris (rows): 1,213,145 baris.
+- Jumlah kolom (features): 16 kolom.
 - Tipe data: Tabular / Spatiotemporal.
-- Ukuran dataset: Belum diketahui (perlu memeriksa file dataset).
-- Format file: CSV (jika disimpan dalam format CSV).
+- Ukuran dataset: 98.99 MB.
+- Format file: CSV.
 
 ### 4.2 Deskripsi Fitur
 
