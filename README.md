@@ -108,20 +108,11 @@ Proyek ini dimulai dari tahap Learn (L) dengan mengidentifikasi permasalahan kar
 ## 3. BUSINESS UNDERSTANDING / PROBLEM UNDERSTANDING  **[L]**
 
 ### 3.1 Problem Statements
-Tuliskan 2–4 pernyataan masalah yang jelas dan spesifik.
 
-**Contoh (universal):**
-1. Model perlu mampu memprediksi nilai target dengan akurasi tinggi
-2. Sistem harus dapat mengidentifikasi pola pada citra secara otomatis
-3. Dataset memiliki noise sehingga perlu preprocessing yang tepat
-4. Dibutuhkan model deep learning yang mampu belajar representasi fitur kompleks
-
-**[
-  1. Kebakaran hutan dan lahan (karhutla) sering terjadi tanpa peringatan dini yang akurat, sehingga mitigasi terlambat dilakukan.
+1. Kebakaran hutan dan lahan (karhutla) sering terjadi tanpa peringatan dini yang akurat, sehingga mitigasi terlambat dilakukan.
 2. Data titik api (hotspot) dan cuaca harian (seperti suhu, curah hujan, dan kelembapan) belum dimanfaatkan secara optimal untuk memprediksi potensi karhutla.
 3. Diperlukan model machine learning dan deep learning yang dapat mempelajari pola historis cuaca dan hotspot untuk mengidentifikasi hari dengan risiko tinggi kemunculan titik api.
 4. Model prediktif harus memiliki akurasi dan recall yang baik agar sistem tidak melewatkan peringatan pada hari-hari rawan karhutla.
-]**
 
 ### 3.2 Formulasi Learning Problem (WAJIB)
 
@@ -135,92 +126,30 @@ Rumuskan masalah dalam kerangka *Learning Problem*:
 
 ### 3.3 Goals
 
-Tujuan harus spesifik, terukur, dan selaras dengan problem statement.
-**Contoh tujuan:**
-1. Membangun model ML untuk memprediksi variabel target dengan akurasi > 80%
-2. Mengukur performa tiga pendekatan model (baseline, advanced, deep learning)
-3. Menentukan model terbaik berdasarkan metrik evaluasi yang relevan
-4. Menghasilkan sistem yang dapat bekerja secara reproducible
 
-> Sertakan minimal satu goal yang menunjukkan kontribusi terhadap target SDG yang dipilih (Bab 2.2).
-
-**[
-  1. Membangun model machine learning untuk memprediksi klasifikasi risiko titik api harian dengan metrik F1-Score minimal 80%.
+1. Membangun model machine learning untuk memprediksi klasifikasi risiko titik api harian dengan metrik F1-Score minimal 80%.
 
 2. Menggabungkan data cuaca spasial dengan data historis titik api untuk mengekstrak fitur yang paling berpengaruh terhadap karhutla.
 
 3. Membandingkan kinerja tiga arsitektur model: Baseline (Logistic Regression), Advanced (XGBoost/Random Forest), dan Deep Learning (Multilayer Perceptron).
 
 4. Menghasilkan purwarupa sistem peringatan dini karhutla untuk mendukung tindakan mitigasi bencana sesuai dengan SDG 13 (Climate Action).
-]**
 
 ### 3.4 Solution Approach  **[M]**
 
 Mahasiswa **WAJIB** menggunakan minimal **tiga model** dengan komposisi sebagai berikut:
 #### **Model 1 – Baseline Model**
 Model sederhana sebagai pembanding dasar.
-**Pilihan model:**
-- Linear Regression (untuk regresi)
-- Logistic Regression (untuk klasifikasi)
-- K-Nearest Neighbors (KNN)
-- Decision Tree
-- Naive Bayes
-
-**[Logistic RegressionAlasan: Logistic Regression adalah model yang sangat baik dan robust untuk klasifikasi biner dasar. Model ini mudah diinterpretasikan koefisien fiturnya (seperti pengaruh suhu terhadap probabilitas titik api) dan efisien dalam waktu pelatihan. Model ini memberikan garis dasar (baseline) kinerja linier sebelum beralih ke model yang lebih kompleks.]**
+Logistic RegressionAlasan: Logistic Regression adalah model yang sangat baik dan robust untuk klasifikasi biner dasar. Model ini mudah diinterpretasikan koefisien fiturnya (seperti pengaruh suhu terhadap probabilitas titik api) dan efisien dalam waktu pelatihan. Model ini memberikan garis dasar (baseline) kinerja linier sebelum beralih ke model yang lebih kompleks.
 
 #### **Model 2 – Advanced / ML Model**
 Model machine learning yang lebih kompleks.
-**Pilihan model:**
-- Random Forest
-- Gradient Boosting (XGBoost, LightGBM, CatBoost)
-- Support Vector Machine (SVM)
-- Ensemble methods
-- Clustering (K-Means, DBSCAN) - untuk unsupervised
-- PCA / dimensionality reduction (untuk preprocessing)
-
-**[Random ForestAlasan: Random Forest adalah algoritma ensemble tree-based yang kuat dalam menangani fitur non-linear dan interaksi fitur yang kompleks (seperti hubungan antara curah hujan, suhu, dan kelembapan). Model ini juga tahan terhadap outlier dan tidak memerlukan scaling data yang ketat. Model ini akan digunakan untuk meningkatkan akurasi dari baseline.]**
+Random ForestAlasan: Random Forest adalah algoritma ensemble tree-based yang kuat dalam menangani fitur non-linear dan interaksi fitur yang kompleks (seperti hubungan antara curah hujan, suhu, dan kelembapan). Model ini juga tahan terhadap outlier dan tidak memerlukan scaling data yang ketat. Model ini akan digunakan untuk meningkatkan akurasi dari baseline.
 
 #### **Model 3 – Deep Learning Model (WAJIB)**
 Model deep learning yang sesuai dengan jenis data.
-**Pilihan Implementasi (pilih salah satu sesuai dataset):**
-**A. Tabular Data:**
-- Multilayer Perceptron (MLP) / Neural Network
-- Minimum: 2 hidden layers
-- Contoh: prediksi harga, klasifikasi binary/multiclass
-
-**B. Image Data:**
-- CNN sederhana (minimum 2 convolutional layers) **ATAU**
-- Transfer Learning (ResNet, VGG, MobileNet, EfficientNet) - **recommended**
-- Contoh: klasifikasi gambar, object detection
-
-**C. Text Data:**
-- LSTM/GRU (minimum 1 layer) **ATAU**
-- Embedding + Dense layers **ATAU**
-- Pre-trained model (BERT, DistilBERT, Word2Vec)
-- Contoh: sentiment analysis, text classification
-
-**D. Time Series:**
-- LSTM/GRU untuk sequential prediction
-- Contoh: forecasting, anomaly detection
-
-**E. Recommender Systems:**
-- Neural Collaborative Filtering (NCF)
-- Autoencoder-based Collaborative Filtering
-- Deep Matrix Factorization
-
-**Minimum Requirements untuk Deep Learning:**
-- ✅ Model harus training minimal 10 epochs
-- ✅ Harus ada plot loss dan accuracy/metric per epoch
-- ✅ Harus ada hasil prediksi pada test set
-- ✅ Training time dicatat (untuk dokumentasi)
-
-**Tidak Diperbolehkan:**
-- ❌ Copy-paste kode tanpa pemahaman
-- ❌ Model tidak di-train (hanya define arsitektur)
-- ❌ Tidak ada evaluasi pada test set
-
-**[Multilayer Perceptron (MLP) / Neural Network (Untuk Tabular Data)
-Alasan: Data yang digunakan (cuaca dan titik api) setelah diproses akan berbentuk tabular dengan fitur-fitur numerik (seperti suhu maksimal, kelembapan, kecepatan angin). MLP dengan minimum 2 hidden layers dipilih karena kemampuannya mempelajari representasi fitur tingkat tinggi dan pola non-linear yang sangat kompleks dari data iklim yang tidak dapat ditangkap oleh Logistic Regression atau Random Forest. Model akan dievaluasi loss dan akurasinya selama >10 epochs.]**
+Multilayer Perceptron (MLP) / Neural Network (Untuk Tabular Data)
+Alasan: Data yang digunakan (cuaca dan titik api) setelah diproses akan berbentuk tabular dengan fitur-fitur numerik (seperti suhu maksimal, kelembapan, kecepatan angin). MLP dengan minimum 2 hidden layers dipilih karena kemampuannya mempelajari representasi fitur tingkat tinggi dan pola non-linear yang sangat kompleks dari data iklim yang tidak dapat ditangkap oleh Logistic Regression atau Random Forest. Model akan dievaluasi loss dan akurasinya selama >10 epochs.
 
 ---
 
