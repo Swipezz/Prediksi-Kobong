@@ -1,4 +1,3 @@
----
 ## INFORMASI PROYEK
 
 **Judul Proyek:**  
@@ -36,8 +35,6 @@ SDG 15 - Life on Land
 
 **Target SDG yang Relevan:**
 SDG 13 – Climate Action
-
----
 
 ## 0. KERANGKA ML LIFECYCLE (L-M-O-P)
 
