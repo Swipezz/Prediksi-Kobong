@@ -79,7 +79,6 @@ Pada proyek ini, mahasiswa diharapkan dapat:
 ## 2. PROJECT OVERVIEW  **[L]**
 
 ### 2.1 Latar Belakang
-**Isi bagian ini dengan:**
 Kebakaran hutan dan lahan (karhutla) merupakan permasalahan lingkungan yang sering terjadi di Sumatra dan Kalimantan. Dampaknya meliputi kerusakan ekosistem, pencemaran udara, dan gangguan kesehatan masyarakat. Salah satu faktor yang berkaitan dengan risiko kebakaran adalah suhu udara yang tinggi dan dapat mempercepat pengeringan vegetasi (Aflahah et al., 2019).
 
 Proyek ini bertujuan membangun model machine learning untuk memprediksi risiko kemunculan titik api harian menggunakan data hotspot NASA FIRMS dan suhu udara ERA5-Land. Hasil prediksi diharapkan dapat mendukung peringatan dini dan mitigasi karhutla, sekaligus berkontribusi pada SDG 13 (Climate Action) dan SDG 15 (Life on Land).
@@ -93,7 +92,7 @@ Ide proyek **berasal dari mahasiswa** dan harus selaras dengan **salah satu** da
 | Komponen | Pertanyaan Panduan | Jawaban Anda |
 |----------|--------------------|--------------|
 | **SDG yang dipilih** | Goal nomor berapa dan apa namanya? | [ 	SDG 13 – Climate Action (Penanganan Perubahan Iklim). ] |
-| **Target SDG** | Target (misal 3.4, 13.1) mana yang paling relevan? | [ Target 15.1: Melestarikan dan memulihkan ekosistem daratan serta memastikan pemanfaatan berkelanjutan terhadap hutan, lahan, dan keanekaragaman hayati.] |
+| **Target SDG** | Target (misal 3.4, 13.1) mana yang paling relevan? | [ Target 15.3: Memerangi penggurunan, memulihkan lahan dan tanah yang terdegradasi, serta berupaya mencapai kondisi lahan yang bebas dari degradasi, termasuk melalui upaya pencegahan dan deteksi dini kebakaran hutan dan lahan (karhutla). ] |
 | **Masalah nyata** | Masalah konkret apa yang diangkat? Siapa yang terdampak? | [ 	Karhutla di Sumatra dan Kalimantan yang menyebabkan kerusakan hutan, pencemaran udara, dan gangguan kesehatan masyarakat. ] |
 | **Peran ML** | Mengapa ML/DL cocok? Apa keputusan atau proses yang dibantu? | [ 	Machine Learning digunakan untuk mempelajari pola hotspot dan suhu udara guna memprediksi risiko kemunculan titik api harian sebagai pendukung peringatan dini. ] |
 | **Indikator kontribusi** | Bagaimana hasil model berkontribusi pada target SDG (langsung/tidak langsung)? | [ Menghasilkan prediksi risiko berdasarkan lokasi dan tanggal sehingga wilayah berpotensi kebakaran dapat diidentifikasi lebih awal. ] |
