@@ -218,55 +218,39 @@ Catatan:
 - Pada Dataset 2, fitur confidence memiliki kategori n (nominal), l (low), dan h (high) untuk menunjukkan tingkat keyakinan deteksi titik panas.
 - Fitur type pada Dataset 2 menunjukkan kategori sumber panas yang terdeteksi satelit, bukan tingkat keparahan kebakaran.
 - Kedua dataset akan diintegrasikan berdasarkan kesesuaian tanggal dan kedekatan koordinat geografis. Integrasi ini bertujuan menganalisis hubungan antara kondisi cuaca, kelembapan tanah, dan faktor lingkungan lainnya terhadap kemunculan titik panas di Indonesia.
+
 ### 4.3 Kondisi Data
 
-Jelaskan kondisi dan permasalahan data:
+Dataset 1 – Data Cuaca dan Kondisi Lingkungan (ERA5-Land)
+- **Missing Values:** Tidak
+- **Duplicate Data:** Tidak
+- **Outliers:** Ada, OUTLIERS (METODE IQR)
+  - precipitation_sum: 615 (3.57%)
+  - temperature_2m_max: 574 (3.33%)
+  - et0_fao_evapotranspiration: 202 (1.17%)
+  - relative_humidity_2m_min: 484 (2.81%)
+  - wind_speed_10m_max: 137 (0.80%)
+  - vapour_pressure_deficit_max: 652 (3.78%)
+  - soil_moisture_0_to_7cm_mean: 31 (0.18%)
+- **Imbalanced Data:** Tidak, karena belum memiliki label kelas hotspot
+- **Noise:** Tidak
+- **Data Quality Issues:** Perbedaan satuan dan resolusi spasial dengan VIIRS perlu diperhatikan
+- **Asumsi Data (i.i.d., distribusi train-test, potensi data leakage):** Tidak sepenuhnya i.i.d. karena memiliki keterkaitan waktu dan lokasi. Pembagian data dilakukan secara kronologis untuk menghindari kebocoran informasi.
 
-- **Missing Values:** [Ada/Tidak, berapa persen?]
-- **Duplicate Data:** [Ada/Tidak, berapa banyak?]
-- **Outliers:** [Ada/Tidak, pada fitur apa?]
-- **Imbalanced Data:** [Ada/Tidak, rasio kelas?]
-- **Noise:** [Jelaskan jika ada]
-- **Data Quality Issues:** [Jelaskan jika ada masalah lain]
-- **Asumsi Data (i.i.d., distribusi train-test, potensi data leakage):** [Jelaskan]
-
-### 4.4 Exploratory Data Analysis (EDA) - (**OPSIONAL**)
-
-**Requirement:** Minimal 3 visualisasi yang bermakna dan insight-nya.
-**Contoh jenis visualisasi yang dapat digunakan:**
-- Histogram (distribusi data)
-- Boxplot (deteksi outliers)
-- Heatmap korelasi (hubungan antar fitur)
-- Bar plot (distribusi kategori)
-- Scatter plot (hubungan 2 variabel)
-- Wordcloud (untuk text data)
-- Sample images (untuk image data)
-- Time series plot (untuk temporal data)
-- Confusion matrix heatmap
-- Class distribution plot
-
-
-#### Visualisasi 1: [Judul Visualisasi]
-[Insert gambar/plot]
-
-**Insight:**  
-[Jelaskan apa yang dapat dipelajari dari visualisasi ini]
-
-#### Visualisasi 2: [Judul Visualisasi]
-
-[Insert gambar/plot]
-
-**Insight:**  
-[Jelaskan apa yang dapat dipelajari dari visualisasi ini]
-
-#### Visualisasi 3: [Judul Visualisasi]
-
-[Insert gambar/plot]
-
-**Insight:**  
-[Jelaskan apa yang dapat dipelajari dari visualisasi ini]
-
----
+Dataset 2 – Data Titik Panas Kebakaran (NASA FIRMS VIIRS)
+- **Missing Values:** Tidak
+- **Duplicate Data:** Tidak
+- **Outliers:** Ada, OUTLIERS (METODE IQR)
+  - longitude: 51518 (4.25%)
+  - bright_ti4: 70809 (5.84%)
+  - scan: 28425 (2.34%)
+  - bright_ti5: 36279 (2.99%)
+  - frp: 103548 (8.54%)
+  - type: 91459 (7.54%)
+- **Imbalanced Data:** Tidak, karena belum memiliki label
+- **Noise:** Tidak
+- **Data Quality Issues:** Perbedaan satuan dan resolusi spasial dengan VIIRS perlu diperhatikan
+- **Asumsi Data (i.i.d., distribusi train-test, potensi data leakage):** Tidak sepenuhnya i.i.d. karena memiliki keterkaitan waktu dan lokasi. Pembagian data dilakukan secara kronologis untuk menghindari kebocoran informasi.
 
 ## 5. DATA PREPARATION  **[L]**
 
@@ -277,91 +261,73 @@ Bagian ini menjelaskan **semua** proses transformasi dan preprocessing data yang
 - Removing duplicates
 - Handling outliers
 - Data type conversion
-**Contoh:**
-```
-Missing Values:
-- Fitur 'age' memiliki 50 missing values (5% dari data)
-- Strategi: Imputasi dengan median karena distribusi skewed
-- Alasan: Median lebih robust terhadap outliers dibanding mean
-```
+- Penggabungan Data
+- Pembentukan Target
 
-**[Jelaskan langkah-langkah data cleaning yang Anda lakukan]**
+Data cleaning dilakukan dengan mengisi nilai kosong pada hotspot_count menggunakan nilai 0, mengonversi kolom tanggal date dan acq_date ke format datetime, serta membulatkan koordinat latitude dan longitude menjadi satu angka desimal agar data cuaca dan VIIRS dapat digabungkan. Selanjutnya, data VIIRS diagregasi berdasarkan tanggal dan koordinat untuk menghitung jumlah hotspot harian. Kedua dataset kemudian digabungkan menggunakan metode Left Join. Variabel target is_hotspot dibentuk dengan nilai 1 jika terdapat hotspot dan 0 jika tidak terdapat hotspot.
 
 ### 5.2 Feature Engineering
 **Aktivitas:**
 - Creating new features
 - Feature extraction
 - Feature selection
+- Target encoding
 - Dimensionality reduction
 
-**[Jelaskan feature engineering yang Anda lakukan]**
+Feature engineering dilakukan dengan membuat fitur koordinat baru lat_round dan lon_round melalui pembulatan latitude dan longitude menjadi satu angka desimal. Data VIIRS juga diagregasi berdasarkan tanggal dan koordinat untuk menghasilkan fitur hotspot_count. Selanjutnya, dibentuk variabel target is_hotspot dengan nilai 1 jika terdapat hotspot dan 0 jika tidak. Fitur yang tidak diperlukan, seperti koordinat dan kolom hasil agregasi, dihapus sebelum proses pemodelan.
 
 ### 5.3 Data Transformation
 
 **Untuk Data Tabular:**
-- Encoding (Label Encoding, One-Hot Encoding, Ordinal Encoding)
-- Scaling (Standardization, Normalization, MinMaxScaler)
-
-**Untuk Data Text:**
-- Tokenization
-- Lowercasing
-- Removing punctuation/stopwords
-- Stemming/Lemmatization
-- Padding sequences
-- Word embedding (Word2Vec, GloVe, fastText)
-
-**Untuk Data Image:**
-- Resizing
-- Normalization (pixel values 0-1 atau -1 to 1)
-- Data augmentation (rotation, flip, zoom, brightness, etc.)
-- Color space conversion
+- Encoding (Binary Encoding pada variabel target is_hotspot dengan nilai 0 dan 1)
+- Scaling (Standardization menggunakan StandardScaler)
+- Class Balancing (SMOTE pada data training)
 
 **Untuk Time Series:**
-- Creating time windows
-- Lag features
-- Rolling statistics
-- Differencing
+- Chronological Data Splitting (70% Training, 15% Validation, 15% Testing)
 
-**[Jelaskan transformasi yang Anda lakukan]**
+Transformasi dilakukan dengan mengubah variabel target is_hotspot menjadi nilai biner 0 dan 1, melakukan standarisasi fitur menggunakan StandardScaler, serta menyeimbangkan kelas data training menggunakan SMOTE. Dataset kemudian dibagi secara kronologis menjadi 70% training, 15% validation, dan 15% testing untuk mempertahankan urutan waktu.
 
 ### 5.4 Data Splitting
 
 **Strategi pembagian data:**
 ```
-- Training set: [X]% ([jumlah] samples)
-- Validation set: [X]% ([jumlah] samples) - jika ada
-- Test set: [X]% ([jumlah] samples)
-```
-**Contoh:**
-```
-Menggunakan stratified split untuk mempertahankan distribusi kelas:
-- Training: 80% (8000 samples)
-- Test: 20% (2000 samples)
-- Random state: 42 untuk reproducibility
+- Training set: 70% (182.882 samples)
+- Validation set: 15% (39.189 samples)
+- Test set: 15% (39.190 samples)
+- Metode: Chronological Split (berdasarkan urutan waktu)
 ```
 
-> **Penting:** Test set hanya digunakan **sekali** pada tahap P (evaluasi akhir). Tuning pada tahap O hanya boleh memakai validation set / cross-validation. Fit scaler/encoder hanya pada data training untuk menghindari data leakage.
-
-**[Jelaskan strategi splitting Anda dan alasannya]**
+Pembagian data menggunakan metode chronological split agar urutan waktu tetap terjaga dan data masa depan tidak tercampur dengan data masa lalu. Strategi ini sesuai untuk prediksi hotspot berbasis data cuaca dan VIIRS. Scaler hanya dilatih menggunakan training set, kemudian diterapkan pada validation dan test set untuk menghindari data leakage. SMOTE hanya diterapkan pada training set untuk menyeimbangkan distribusi kelas. Test set disimpan untuk evaluasi akhir model.
 
 ### 5.5 Data Balancing (jika diperlukan)
 **Teknik yang digunakan:**
 - SMOTE (Synthetic Minority Over-sampling Technique)
-- Random Undersampling
-- Class weights
-- Ensemble sampling
 
-**[Jelaskan jika Anda melakukan data balancing]**
+Data balancing dilakukan menggunakan SMOTE hanya pada training set untuk mengatasi ketidakseimbangan kelas. Sebelum SMOTE, distribusi kelas terdiri dari 182.474 data non-hotspot dan 408 data hotspot. Setelah SMOTE, kedua kelas menjadi seimbang, masing-masing sebanyak 182.474 sampel. Validation set dan test set tidak mengalami proses balancing.
 
 ### 5.6 Ringkasan Data Preparation
 
-**Per langkah, jelaskan:**
-1. **Apa** yang dilakukan
-**[Jelaskan ]**
-2. **Mengapa** penting
-**[Jelaskan Mengapa ?]**
-3. **Bagaimana** implementasinya
-**[Jelaskan Bagaimana]**
+- **Data Cleaning**
+  - **Apa**: Membersihkan dan menyesuaikan data cuaca dan VIIRS.
+  - **Mengapa**: Memastikan data memiliki format dan struktur yang sesuai untuk proses pengolahan.
+  - **Bagaimana**: Mengisi nilai kosong hotspot_count dengan 0, mengonversi tipe data tanggal, dan membulatkan koordinat menjadi satu angka desimal.
+- **Feature Engineering**
+  - **Apa**: Membuat fitur baru dan variabel target is_hotspot.
+  - **Mengapa**: Menghasilkan informasi jumlah hotspot berdasarkan lokasi dan tanggal untuk kebutuhan klasifikasi.
+  - **Bagaimana**: Mengagregasi data VIIRS menggunakan groupby(), menggabungkannya dengan data cuaca menggunakan Left Join, dan membentuk target biner 0 dan 1.
+- **Data Transformation**
+  - **Apa**: Melakukan encoding, standarisasi, dan penyeimbangan kelas.
+  - **Mengapa**: Menyesuaikan skala fitur dan mengatasi ketidakseimbangan distribusi kelas.
+  - **Bagaimana**: Menggunakan .astype(int) untuk target, StandardScaler untuk standarisasi, dan SMOTE untuk menyeimbangkan data training.
+- **Data Splitting**
+  - **Apa**: Membagi dataset menjadi training, validation, dan testing.
+  - **Mengapa**: Memisahkan data untuk pelatihan, pemilihan model, dan evaluasi akhir.
+  - **Bagaimana**: Menggunakan chronological split dengan pembagian 70% training (182.882 data), 15% validation (39.189 data), dan 15% testing (39.190 data).
+- **Data Balancing**
+  - **Apa**: Menyeimbangkan jumlah kelas hotspot dan non-hotspot.
+  - **Mengapa**: Mengurangi ketimpangan jumlah kelas agar model dapat mempelajari kelas minoritas.
+  - **Bagaimana**: Menggunakan SMOTE pada training set sehingga kedua kelas memiliki masing-masing 182.474 sampel. Validation dan test set tidak diubah.
 
 ---
 
