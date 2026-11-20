@@ -1,0 +1,179 @@
+{
+ "viirs_funnel": [
+  {
+   "tahap": "Seluruh deteksi VIIRS",
+   "n": 1213145,
+   "% dari awal": 100.0
+  },
+  {
+   "tahap": "type == 0 (kebakaran vegetasi)",
+   "n": 1121686,
+   "% dari awal": 92.5
+  },
+  {
+   "tahap": "confidence != low",
+   "n": 1038721,
+   "% dari awal": 85.6
+  }
+ ],
+ "row_funnel": [
+  {
+   "tahap": "Baris cuaca awal (6 lokasi \u00d7 2.871 hari)",
+   "n_baris": 17226,
+   "dibuang": 0
+  },
+  {
+   "tahap": "Buang hari tanpa label (target_date > 2024-12-31; cuaca 2025\u20132026 tidak punya VIIRS)",
+   "n_baris": 13146,
+   "dibuang": 4080
+  },
+  {
+   "tahap": "Buang baris yang labelnya jatuh pada hari gap satelit",
+   "n_baris": 13104,
+   "dibuang": 42
+  },
+  {
+   "tahap": "Buang baris dengan hari-t gap (hs_count tidak valid)",
+   "n_baris": 13086,
+   "dibuang": 18
+  },
+  {
+   "tahap": "Buang warm-up jendela rolling 30 hari (29 hari pertama per lokasi)",
+   "n_baris": 12912,
+   "dibuang": 174
+  }
+ ],
+ "causality_checks_passed": true,
+ "split_table": [
+  {
+   "split": "train",
+   "n_sampel": 8586,
+   "persen": 66.5,
+   "target_date_min": 1548892800000,
+   "target_date_max": 1672444800000,
+   "n_positif": 858,
+   "persen_positif": 10.0
+  },
+  {
+   "split": "val",
+   "n_sampel": 2148,
+   "persen": 16.6,
+   "target_date_min": 1672531200000,
+   "target_date_max": 1703980800000,
+   "n_positif": 444,
+   "persen_positif": 20.7
+  },
+  {
+   "split": "test",
+   "n_sampel": 2178,
+   "persen": 16.9,
+   "target_date_min": 1704067200000,
+   "target_date_max": 1735603200000,
+   "n_positif": "dikunci",
+   "persen_positif": "dikunci"
+  }
+ ],
+ "leak_diag": [
+  {
+   "skema split": "acak stratified 80/20 (10 seed: 42-51)",
+   "ROC-AUC": "0.930 \u00b1 0.010 (min 0.915, maks 0.943)",
+   "PR-AUC": "0.784 \u00b1 0.028 (min 0.726, maks 0.825)",
+   "proporsi positif di set evaluasi": "12.1%"
+  },
+  {
+   "skema split": "kronologis (train 2019-22 -> val 2023)",
+   "ROC-AUC": "0.929",
+   "PR-AUC": "0.835",
+   "proporsi positif di set evaluasi": "20.7%"
+  }
+ ],
+ "leak_diag_seed_auc": [
+  0.9433,
+  0.9161,
+  0.9148,
+  0.9389,
+  0.9197,
+  0.9351,
+  0.9397,
+  0.927,
+  0.9331,
+  0.9347
+ ],
+ "class_weights": {
+  "0": 0.5555124223602484,
+  "1": 5.003496503496503,
+  "scale_pos_weight": 9.006993006993007,
+  "n_train": 8586,
+  "n_neg": 7728,
+  "n_pos": 858,
+  "dihitung_dari": "train saja"
+ },
+ "n_features_numeric_all": 28,
+ "n_features_numeric_selected": 22,
+ "n_model_columns": 28,
+ "dropped": [
+  {
+   "dibuang": "precip_sum_14d",
+   "dipertahankan": "water_deficit_14d",
+   "abs_rho": 0.996
+  },
+  {
+   "dibuang": "hs_frp_sum_7d",
+   "dipertahankan": "hs_count_7d",
+   "abs_rho": 0.996
+  },
+  {
+   "dibuang": "vapour_pressure_deficit_max",
+   "dipertahankan": "relative_humidity_2m_min",
+   "abs_rho": 0.993
+  },
+  {
+   "dibuang": "vpd_max_mean_7d",
+   "dipertahankan": "rh_min_mean_7d",
+   "abs_rho": 0.99
+  },
+  {
+   "dibuang": "soil_moisture_0_to_7cm_mean",
+   "dipertahankan": "soil_moisture_7_to_28cm_mean",
+   "abs_rho": 0.978
+  },
+  {
+   "dibuang": "soil_0_7_mean_7d",
+   "dipertahankan": "soil_moisture_7_to_28cm_mean",
+   "abs_rho": 0.975
+  }
+ ],
+ "log_cols": [
+  "precipitation_sum",
+  "precip_sum_3d",
+  "precip_sum_7d",
+  "precip_sum_30d",
+  "hs_count",
+  "hs_count_7d",
+  "hs_count_30d"
+ ],
+ "selected": [
+  "precipitation_sum",
+  "temperature_2m_max",
+  "et0_fao_evapotranspiration",
+  "relative_humidity_2m_min",
+  "wind_speed_10m_max",
+  "soil_moisture_7_to_28cm_mean",
+  "precip_sum_3d",
+  "precip_sum_7d",
+  "precip_sum_30d",
+  "dry_days_consec",
+  "temp_max_mean_7d",
+  "rh_min_mean_7d",
+  "wind_max_mean_7d",
+  "soil_7_28_mean_14d",
+  "soil_0_7_delta_7d",
+  "water_deficit_14d",
+  "hs_count",
+  "hs_count_7d",
+  "hs_count_30d",
+  "hs_days_since_last",
+  "doy_sin",
+  "doy_cos"
+ ]
+}
