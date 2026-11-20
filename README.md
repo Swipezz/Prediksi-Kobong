@@ -254,80 +254,133 @@ Dataset 2 – Data Titik Panas Kebakaran (NASA FIRMS VIIRS)
 
 ## 5. DATA PREPARATION  **[L]**
 
-Bagian ini menjelaskan **semua** proses transformasi dan preprocessing data yang dilakukan.
-### 5.1 Data Cleaning
-**Aktivitas:**
-- Handling missing values
-- Removing duplicates
-- Handling outliers
-- Data type conversion
-- Penggabungan Data
-- Pembentukan Target
+Bagian ini menjelaskan **semua** proses transformasi dan preprocessing data. Kode: `src/prep.py` (fungsi) dan `notebooks/02_data_preparation.ipynb` (eksekusi + verifikasi). Seluruh langkah memakai `random_state = 42`.
 
-Data cleaning dilakukan dengan mengisi nilai kosong pada hotspot_count menggunakan nilai 0, mengonversi kolom tanggal date dan acq_date ke format datetime, serta membulatkan koordinat latitude dan longitude menjadi satu angka desimal agar data cuaca dan VIIRS dapat digabungkan. Selanjutnya, data VIIRS diagregasi berdasarkan tanggal dan koordinat untuk menghitung jumlah hotspot harian. Kedua dataset kemudian digabungkan menggunakan metode Left Join. Variabel target is_hotspot dibentuk dengan nilai 1 jika terdapat hotspot dan 0 jika tidak terdapat hotspot.
+**Urutan eksekusi** (sedikit berbeda dari urutan bab, demi mencegah leakage): 5.1 → 5.2 (tanpa parameter yang dipelajari dari data) → **5.4 split** → 5.3 (parameter di-*fit* hanya pada train) → 5.5.
+
+### 5.1 Data Cleaning
+
+```
+Missing Values:
+- Cuaca & VIIRS: 0 missing (0%). Tidak ada imputasi.
+- Alasan: imputasi pada deret waktu berisiko menyuntikkan informasi dari masa depan; verifikasi dilakukan dengan assert agar pipeline gagal-keras bila data berubah.
+
+Hari gap satelit:
+- 7 hari dengan 0 hotspot di seluruh Indonesia (median normal 159/hari) -> hitungan hotspot dijadikan NaN, bukan 0.
+- Alasan: mencegah label negatif palsu. Baris yang label-nya jatuh pada hari gap (42 baris) dan baris dengan hari-t gap (18 baris) dibuang.
+
+Duplicates:
+- 0 duplikat -> tidak ada yang dihapus (diverifikasi dengan assert).
+
+Noise VIIRS:
+- Hanya type == 0 (kebakaran vegetasi) dan confidence != 'low': 1.213.145 -> 1.121.686 (92,5%) -> 1.038.721 (85,6%).
+- Alasan: type 1-3 (gunung api, sumber statis, lepas pantai) bukan karhutla; confidence low banyak positif palsu.
+- Kolom konstan (satellite, instrument, version) dan source_year tidak dipakai.
+
+Outliers:
+- Outlier IQR (0,2%-3,8% per fitur cuaca) TIDAK dihapus.
+- Alasan: semuanya valid secara fisik (hujan lebat, hari sangat kering) dan justru informatif untuk kebakaran.
+- Penanganan: log1p untuk fitur miring-kanan (skewness presipitasi 2,34 -> -0,13), lihat 5.3.
+
+Konversi tipe & penyelarasan:
+- date (cuaca, string UTC) dan acq_date (VIIRS) -> datetime tanpa zona waktu; lokasi diberi ID L1-L6.
+- Hotspot diagregasi per (lokasi, hari) dalam radius 25 km (haversine): hs_count dan hs_frp_sum.
+- Alasan radius 25 km: proporsi positif wajar (~10%) dan lingkaran antar-titik tidak tumpang tindih (jarak minimum ~74 km).
+```
+
+**Funnel baris (alasan setiap baris dibuang):**
+
+| Tahap | Baris tersisa | Dibuang |
+|---|---|---|
+| Baris cuaca awal (6 lokasi × 2.871 hari) | 17.226 | – |
+| Buang hari tanpa label (target_date > 2024-12-31; cuaca 2025–2026 tidak punya VIIRS) | 13.146 | 4.080 |
+| Buang baris yang label-nya jatuh pada hari gap satelit | 13.104 | 42 |
+| Buang baris dengan hari-t gap | 13.086 | 18 |
+| Buang warm-up jendela rolling 30 hari (29 hari pertama per lokasi) | **12.912** | 174 |
 
 ### 5.2 Feature Engineering
-**Aktivitas:**
-- Creating new features
-- Feature extraction
-- Feature selection
-- Target encoding
-- Dimensionality reduction
 
-Feature engineering dilakukan dengan membuat fitur koordinat baru lat_round dan lon_round melalui pembulatan latitude dan longitude menjadi satu angka desimal. Data VIIRS juga diagregasi berdasarkan tanggal dan koordinat untuk menghasilkan fitur hotspot_count. Selanjutnya, dibentuk variabel target is_hotspot dengan nilai 1 jika terdapat hotspot dan 0 jika tidak. Fitur yang tidak diperlukan, seperti koordinat dan kolom hasil agregasi, dihapus sebelum proses pemodelan.
+Semua fitur dihitung **hanya dari hari ≤ t** (jendela mundur, per lokasi). Target = ada hotspot pada hari t+1.
+
+| Grup | Fitur | Definisi | Alasan |
+|---|---|---|---|
+| Cuaca mentah (8) | 8 variabel Bab 4.2a | nilai hari t | kondisi langsung bahan bakar & atmosfer |
+| Akumulasi hujan (4) | `precip_sum_{3,7,14,30}d` | jumlah hujan jendela mundur | kekeringan bersifat kumulatif |
+| Spell kering (1) | `dry_days_consec` | hari berturut-turut hujan < 1 mm (maks 90) | lamanya kekeringan |
+| Rata-rata 7 hari (4) | suhu, RH, VPD, angin | rolling mean 7 hari | meredam noise harian |
+| Tanah (3) | `soil_0_7_mean_7d`, `soil_7_28_mean_14d`, `soil_0_7_delta_7d` | rolling mean & selisih 7 hari | tren pengeringan tanah/gambut |
+| Neraca air (1) | `water_deficit_14d` | ΣET0 14 hari − Σhujan 14 hari | defisit air fisik |
+| Musiman (2) | `doy_sin`, `doy_cos` | sin/cos hari-dalam-tahun | musim api siklik, kontinu di pergantian tahun |
+| Riwayat hotspot (5) | `hs_count`, `hs_count_7d`, `hs_count_30d`, `hs_frp_sum_7d`, `hs_days_since_last` | hitungan/FRP/umur api terakhir (dihitung dari grid VIIRS sejak 2018-04) | persistensi api; dipisah sebagai grup agar dapat di-*ablation* |
+| Lokasi | one-hot `loc_id` (L1–L6) | – | tingkat dasar tiap lokasi berbeda (7–15%) |
+
+Total: **28 fitur numerik** + one-hot lokasi.
+
+**Feature selection** (dihitung pada **train saja**, Bab 5.3a): 28 → **22** fitur numerik. **Dimensionality reduction (PCA) tidak dilakukan:** hanya 22 fitur dan fitur dipertahankan interpretabel untuk analisis kontribusi.
+
+**Uji kausalitas (anti-leakage):** fitur dihitung pada data yang dipotong di 2023-06-30 dan pada data penuh; seluruh fitur pada baris ≤ tanggal itu **identik** (cuaca: lolos; riwayat hotspot: lolos), dan label terverifikasi sama dengan hotspot hari t+1.
 
 ### 5.3 Data Transformation
 
-**Untuk Data Tabular:**
-- Encoding (Binary Encoding pada variabel target is_hotspot dengan nilai 0 dan 1)
-- Scaling (Standardization menggunakan StandardScaler)
-- Class Balancing (SMOTE pada data training)
+**Tabular (deret waktu) — semua parameter di-`fit` hanya pada train:**
 
-**Untuk Time Series:**
-- Chronological Data Splitting (70% Training, 15% Validation, 15% Testing)
+1. **Seleksi fitur berbasis korelasi:** untuk tiap pasangan dengan |Spearman ρ| > 0,97 buang salah satu yang korelasinya dengan target lebih rendah. Dibuang (6): `precip_sum_14d` (↔ `water_deficit_14d`, 0,996), `hs_frp_sum_7d` (↔ `hs_count_7d`, 0,996), `vapour_pressure_deficit_max` (↔ `relative_humidity_2m_min`, 0,993), `vpd_max_mean_7d` (↔ `rh_min_mean_7d`, 0,990), `soil_moisture_0_to_7cm_mean` (↔ `soil_moisture_7_to_28cm_mean`, 0,978), `soil_0_7_mean_7d` (↔ `soil_moisture_7_to_28cm_mean`, 0,975). Pemilihan RH vs VPD secara statistik hampir setara (|ρ| dgn target 0,319 vs 0,312). Seluruh 28 fitur tetap tersimpan di `*_engineered.csv` untuk ablation.
+2. **`log1p`** pada fitur berekor panjang (7 fitur terpilih): `precipitation_sum`, `precip_sum_{3,7,30}d`, `hs_count`, `hs_count_7d`, `hs_count_30d`. Deterministik (tanpa parameter) sehingga tanpa risiko leakage; menjaga nol tetap nol.
+3. **One-hot encoding** `loc_id` (`handle_unknown='ignore'`) — 6 kolom.
+4. **StandardScaler** pada 20 fitur numerik (di luar `doy_sin/cos`) — rata-rata & simpangan baku dari train; `doy_sin/cos` dibiarkan (sudah dalam [−1, 1]).
+5. Implementasi: `ColumnTransformer.fit(train)` → `transform(val/test)`; disimpan di `models/preprocessor.joblib`. Bentuk akhir: 28 kolom model (6 one-hot + 20 terstandar + 2 siklik).
 
-Transformasi dilakukan dengan mengubah variabel target is_hotspot menjadi nilai biner 0 dan 1, melakukan standarisasi fitur menggunakan StandardScaler, serta menyeimbangkan kelas data training menggunakan SMOTE. Dataset kemudian dibagi secara kronologis menjadi 70% training, 15% validation, dan 15% testing untuk mempertahankan urutan waktu.
+Tokenisasi, augmentasi gambar, dsb. tidak relevan (data tabular).
 
 ### 5.4 Data Splitting
 
-**Strategi pembagian data:**
+**Strategi pembagian data** — kronologis berdasarkan *tanggal target* (hari yang diprediksi):
+
 ```
-- Training set: 70% (182.882 samples)
-- Validation set: 15% (39.189 samples)
-- Test set: 15% (39.190 samples)
-- Metode: Chronological Split (berdasarkan urutan waktu)
+- Training set  : 66,5% (8.586 samples)  target 2019-01-31 s.d. 2022-12-31   | positif 858 (10,0%)
+- Validation set: 16,6% (2.148 samples)  target 2023-01-01 s.d. 2023-12-31   | positif 444 (20,7%)
+- Test set      : 16,9% (2.178 samples)  target 2024-01-01 s.d. 2024-12-31   | DIKUNCI (tidak dianalisis)
+- Total         : 12.912 samples (tiap lokasi: 1.431 / 358 / 363)
+- Random state  : 42 (diagnostik & model berikutnya)
 ```
 
-Pembagian data menggunakan metode chronological split agar urutan waktu tetap terjaga dan data masa depan tidak tercampur dengan data masa lalu. Strategi ini sesuai untuk prediksi hotspot berbasis data cuaca dan VIIRS. Scaler hanya dilatih menggunakan training set, kemudian diterapkan pada validation dan test set untuk menghindari data leakage. SMOTE hanya diterapkan pada training set untuk menyeimbangkan distribusi kelas. Test set disimpan untuk evaluasi akhir model.
+**Mengapa bukan *stratified random split*?** Data adalah deret waktu spasial: hari bertetangga sangat berautokorelasi dan fitur rolling saling tumpang tindih; skenario nyata juga memprediksi masa depan dari masa lalu. Stratifikasi tidak dapat dipenuhi bersamaan dengan urutan waktu, sehingga proporsi kelas tiap split **dilaporkan** dan pembobotan kelas dihitung dari train (5.5). Pembagian 2019–2022 / 2023 / 2024 membuat train dan validasi sama-sama memuat satu tahun api besar (2019 dan 2023), sedangkan 2024 sebagai tahun terakhir menjadi test.
+
+**Diagnostik (hanya train+val; bukan pemilihan model):** Random Forest sederhana pada 10 pengacakan stratified 80/20 menghasilkan ROC-AUC 0,930 ± 0,010 (rentang 0,915–0,943); pada split kronologis 0,929. Jadi **tidak terbukti** split acak menggelembungkan skor secara sistematis pada dataset ini; keunggulan split kronologis terletak pada kesesuaiannya dengan skenario penggunaan, estimasi yang lebih stabil, dan karena split acak menyembunyikan pergeseran distribusi (proporsi positif 12,1% vs 20,7% pada validasi 2023).
+
+> **Penting:** Test set hanya digunakan **sekali** pada tahap P (evaluasi akhir). Tuning pada tahap O hanya boleh memakai validation set / cross-validation berbasis waktu. *Scaler*/*encoder* di-fit hanya pada train. Sidik jari SHA-256 berkas test disimpan di `data/processed/test_checksums.json` agar dapat dibuktikan tidak berubah hingga Minggu 6.
 
 ### 5.5 Data Balancing (jika diperlukan)
-**Teknik yang digunakan:**
-- SMOTE (Synthetic Minority Over-sampling Technique)
 
-Data balancing dilakukan menggunakan SMOTE hanya pada training set untuk mengatasi ketidakseimbangan kelas. Sebelum SMOTE, distribusi kelas terdiri dari 182.474 data non-hotspot dan 408 data hotspot. Setelah SMOTE, kedua kelas menjadi seimbang, masing-masing sebanyak 182.474 sampel. Validation set dan test set tidak mengalami proses balancing.
+**Teknik yang digunakan: class weight (dihitung dari data train saja).** Validasi dan test dibiarkan pada distribusi aslinya.
+
+```
+n_train = 8.586 (negatif 7.728, positif 858)
+weight_kelas_0 = n / (2 * n0) = 0,5555
+weight_kelas_1 = n / (2 * n1) = 5,0035
+scale_pos_weight (XGBoost/LightGBM) = n0 / n1 = 9,007
+```
+
+**Mengapa bukan SMOTE / undersampling?** (1) Baris adalah deret waktu dengan fitur rolling — sampel sintetis hasil interpolasi menghasilkan kombinasi hujan/riwayat yang tidak pernah terjadi, merusak koherensi temporal, dan membuat one-hot lokasi non-biner; (2) rasio 9:1 tergolong sedang, class weight + metrik PR-AUC/F1 memadai; (3) undersampling membuang ≈ 90% hari negatif. SMOTE dicatat sebagai kandidat iterasi di Bab 7.5 bila recall kelas positif rendah.
+
+![Distribusi kelas per split](reports/figures/fig07_distribusi_kelas_split.png)
 
 ### 5.6 Ringkasan Data Preparation
 
-- **Data Cleaning**
-  - **Apa**: Membersihkan dan menyesuaikan data cuaca dan VIIRS.
-  - **Mengapa**: Memastikan data memiliki format dan struktur yang sesuai untuk proses pengolahan.
-  - **Bagaimana**: Mengisi nilai kosong hotspot_count dengan 0, mengonversi tipe data tanggal, dan membulatkan koordinat menjadi satu angka desimal.
-- **Feature Engineering**
-  - **Apa**: Membuat fitur baru dan variabel target is_hotspot.
-  - **Mengapa**: Menghasilkan informasi jumlah hotspot berdasarkan lokasi dan tanggal untuk kebutuhan klasifikasi.
-  - **Bagaimana**: Mengagregasi data VIIRS menggunakan groupby(), menggabungkannya dengan data cuaca menggunakan Left Join, dan membentuk target biner 0 dan 1.
-- **Data Transformation**
-  - **Apa**: Melakukan encoding, standarisasi, dan penyeimbangan kelas.
-  - **Mengapa**: Menyesuaikan skala fitur dan mengatasi ketidakseimbangan distribusi kelas.
-  - **Bagaimana**: Menggunakan .astype(int) untuk target, StandardScaler untuk standarisasi, dan SMOTE untuk menyeimbangkan data training.
-- **Data Splitting**
-  - **Apa**: Membagi dataset menjadi training, validation, dan testing.
-  - **Mengapa**: Memisahkan data untuk pelatihan, pemilihan model, dan evaluasi akhir.
-  - **Bagaimana**: Menggunakan chronological split dengan pembagian 70% training (182.882 data), 15% validation (39.189 data), dan 15% testing (39.190 data).
-- **Data Balancing**
-  - **Apa**: Menyeimbangkan jumlah kelas hotspot dan non-hotspot.
-  - **Mengapa**: Mengurangi ketimpangan jumlah kelas agar model dapat mempelajari kelas minoritas.
-  - **Bagaimana**: Menggunakan SMOTE pada training set sehingga kedua kelas memiliki masing-masing 182.474 sampel. Validation dan test set tidak diubah.
+| # | Langkah | **Apa** | **Mengapa** | **Bagaimana** |
+|---|---|---|---|---|
+| 1 | Penyelarasan tanggal | `date`/`acq_date` → tanggal UTC naif; lokasi diberi ID L1–L6 | kunci join harus identik | `to_datetime(utc=True)` + `normalize()` |
+| 2 | Verifikasi kualitas | cek missing & duplikat | pipeline gagal-keras bila data berubah | `assert`; tanpa imputasi |
+| 3 | Filter VIIRS | hanya `type==0` & confidence ≠ low (85,6% tersisa) | buang sumber non-karhutla & deteksi palsu | `prep.filter_viirs` |
+| 4 | Hari gap satelit | 7 hari 0-hotspot nasional → NaN; baris terkait dibuang (60 baris) | cegah label negatif palsu | `prep.gap_days` |
+| 5 | Outlier | dipertahankan | ekstrem bersifat fisik & relevan | `log1p` untuk fitur miring-kanan |
+| 6 | Label & agregasi | target = ada hotspot ≤ 25 km pada t+1 | formulasi forecasting H+1 | haversine + `shift(-1)` |
+| 7 | Feature engineering | 8 mentah + 13 cuaca-turunan + 5 riwayat hotspot + 2 musiman + one-hot lokasi | menangkap kekeringan kumulatif, musim, persistensi | rolling mundur per lokasi |
+| 8 | Uji kausalitas | fitur hari t tak berubah bila data setelah t dibuang | cegah leakage dari jendela | potong-bandingkan data |
+| 9 | Split kronologis | train 2019–22 / val 2023 / test 2024 | deret waktu & skenario forecasting | `prep.assign_split` |
+| 10 | Seleksi fitur | buang pasangan \|ρ\| > 0,97 (28 → 22) | kurangi redundansi | korelasi Spearman pada train |
+| 11 | Transformasi | `log1p`, StandardScaler, one-hot, sin/cos | kestabilan skala model linear/MLP | `ColumnTransformer.fit(train)` |
+| 12 | Balancing | class weight dari train, tanpa resampling | hindari data sintetis tidak realistis | `n / (2·n_c)` |
 
 ---
 
