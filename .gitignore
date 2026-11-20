@@ -1,7 +1,7 @@
 # Mengabaikan folder data dan file CSV agar file berukuran besar tidak ter-upload
 data/
-*.csv
-*.zip
+# *.csv
+# *.zip
 
 # Python Cache
 __pycache__/
