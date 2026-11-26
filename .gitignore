@@ -1,0 +1,16 @@
+# Virtual Environment & Cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.cache/
+
+# Raw Data (ukuran besar, diabaikan oleh Git)
+data/raw/*.csv
+data/raw/*.zip
+
+# File sistem operasi & IDE
+.DS_Store
+Thumbs.db
+.vscode/

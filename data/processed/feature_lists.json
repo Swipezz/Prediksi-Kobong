@@ -1,0 +1,198 @@
+{
+ "all_numeric": [
+  "precipitation_sum",
+  "temperature_2m_max",
+  "et0_fao_evapotranspiration",
+  "relative_humidity_2m_min",
+  "wind_speed_10m_max",
+  "vapour_pressure_deficit_max",
+  "soil_moisture_0_to_7cm_mean",
+  "soil_moisture_7_to_28cm_mean",
+  "precip_sum_3d",
+  "precip_sum_7d",
+  "precip_sum_14d",
+  "precip_sum_30d",
+  "dry_days_consec",
+  "temp_max_mean_7d",
+  "rh_min_mean_7d",
+  "vpd_max_mean_7d",
+  "wind_max_mean_7d",
+  "soil_0_7_mean_7d",
+  "soil_7_28_mean_14d",
+  "soil_0_7_delta_7d",
+  "water_deficit_14d",
+  "hs_count",
+  "hs_count_7d",
+  "hs_count_30d",
+  "hs_frp_sum_7d",
+  "hs_days_since_last",
+  "doy_sin",
+  "doy_cos"
+ ],
+ "selected_numeric": [
+  "precipitation_sum",
+  "temperature_2m_max",
+  "et0_fao_evapotranspiration",
+  "relative_humidity_2m_min",
+  "wind_speed_10m_max",
+  "soil_moisture_7_to_28cm_mean",
+  "precip_sum_3d",
+  "precip_sum_7d",
+  "precip_sum_30d",
+  "dry_days_consec",
+  "temp_max_mean_7d",
+  "rh_min_mean_7d",
+  "wind_max_mean_7d",
+  "soil_7_28_mean_14d",
+  "soil_0_7_delta_7d",
+  "water_deficit_14d",
+  "hs_count",
+  "hs_count_7d",
+  "hs_count_30d",
+  "hs_days_since_last",
+  "doy_sin",
+  "doy_cos"
+ ],
+ "dropped_by_correlation": [
+  {
+   "dibuang": "precip_sum_14d",
+   "dipertahankan": "water_deficit_14d",
+   "abs_rho": 0.996
+  },
+  {
+   "dibuang": "hs_frp_sum_7d",
+   "dipertahankan": "hs_count_7d",
+   "abs_rho": 0.996
+  },
+  {
+   "dibuang": "vapour_pressure_deficit_max",
+   "dipertahankan": "relative_humidity_2m_min",
+   "abs_rho": 0.993
+  },
+  {
+   "dibuang": "vpd_max_mean_7d",
+   "dipertahankan": "rh_min_mean_7d",
+   "abs_rho": 0.99
+  },
+  {
+   "dibuang": "soil_moisture_0_to_7cm_mean",
+   "dipertahankan": "soil_moisture_7_to_28cm_mean",
+   "abs_rho": 0.978
+  },
+  {
+   "dibuang": "soil_0_7_mean_7d",
+   "dipertahankan": "soil_moisture_7_to_28cm_mean",
+   "abs_rho": 0.975
+  }
+ ],
+ "log1p_columns": [
+  "precipitation_sum",
+  "precip_sum_3d",
+  "precip_sum_7d",
+  "precip_sum_30d",
+  "hs_count",
+  "hs_count_7d",
+  "hs_count_30d"
+ ],
+ "scaled_columns": [
+  "precipitation_sum",
+  "temperature_2m_max",
+  "et0_fao_evapotranspiration",
+  "relative_humidity_2m_min",
+  "wind_speed_10m_max",
+  "soil_moisture_7_to_28cm_mean",
+  "precip_sum_3d",
+  "precip_sum_7d",
+  "precip_sum_30d",
+  "dry_days_consec",
+  "temp_max_mean_7d",
+  "rh_min_mean_7d",
+  "wind_max_mean_7d",
+  "soil_7_28_mean_14d",
+  "soil_0_7_delta_7d",
+  "water_deficit_14d",
+  "hs_count",
+  "hs_count_7d",
+  "hs_count_30d",
+  "hs_days_since_last"
+ ],
+ "groups": {
+  "weather_raw": [
+   "precipitation_sum",
+   "temperature_2m_max",
+   "et0_fao_evapotranspiration",
+   "relative_humidity_2m_min",
+   "wind_speed_10m_max",
+   "vapour_pressure_deficit_max",
+   "soil_moisture_0_to_7cm_mean",
+   "soil_moisture_7_to_28cm_mean"
+  ],
+  "weather_engineered": [
+   "precip_sum_3d",
+   "precip_sum_7d",
+   "precip_sum_14d",
+   "precip_sum_30d",
+   "dry_days_consec",
+   "temp_max_mean_7d",
+   "rh_min_mean_7d",
+   "vpd_max_mean_7d",
+   "wind_max_mean_7d",
+   "soil_0_7_mean_7d",
+   "soil_7_28_mean_14d",
+   "soil_0_7_delta_7d",
+   "water_deficit_14d"
+  ],
+  "hotspot_history": [
+   "hs_count",
+   "hs_count_7d",
+   "hs_count_30d",
+   "hs_frp_sum_7d",
+   "hs_days_since_last"
+  ],
+  "seasonal": [
+   "doy_sin",
+   "doy_cos"
+  ],
+  "location": [
+   "loc_id (one-hot L1-L6)"
+  ]
+ },
+ "model_columns": [
+  "loc_id_L1",
+  "loc_id_L2",
+  "loc_id_L3",
+  "loc_id_L4",
+  "loc_id_L5",
+  "loc_id_L6",
+  "precipitation_sum",
+  "temperature_2m_max",
+  "et0_fao_evapotranspiration",
+  "relative_humidity_2m_min",
+  "wind_speed_10m_max",
+  "soil_moisture_7_to_28cm_mean",
+  "precip_sum_3d",
+  "precip_sum_7d",
+  "precip_sum_30d",
+  "dry_days_consec",
+  "temp_max_mean_7d",
+  "rh_min_mean_7d",
+  "wind_max_mean_7d",
+  "soil_7_28_mean_14d",
+  "soil_0_7_delta_7d",
+  "water_deficit_14d",
+  "hs_count",
+  "hs_count_7d",
+  "hs_count_30d",
+  "hs_days_since_last",
+  "doy_sin",
+  "doy_cos"
+ ],
+ "target": "fire_next_day",
+ "meta_columns": [
+  "loc_id",
+  "latitude",
+  "longitude",
+  "date",
+  "target_date"
+ ]
+}
