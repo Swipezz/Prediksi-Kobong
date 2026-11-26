@@ -1,4 +1,5 @@
----## INFORMASI PROYEK
+
+## INFORMASI PROYEK
 
 **Judul Proyek:**  
 Prediksi Resiko Titik Api Harian Untuk Peringatan Dini Karhutla Di Sumatra Dan Kalimantan
@@ -37,6 +38,8 @@ SDG 13 – Climate Action
 
 **Target SDG yang Relevan:**
 SDG 15 - Life on Land
+
+
 
 ## 0. KERANGKA ML LIFECYCLE (L-M-O-P)
 
@@ -136,20 +139,14 @@ Rumuskan masalah dalam kerangka *Learning Problem*:
 4. Menghasilkan purwarupa sistem peringatan dini karhutla untuk mendukung tindakan mitigasi bencana sesuai dengan SDG 13 (Climate Action).
 
 ### 3.4 Solution Approach  **[M]**
+#### **Model 1 – Baseline (Decision Tree Classifier)**
+Pohon keputusan tunggal dengan pembobotan kelas (class_weight). Dipilih sebagai tolok ukur dasar (baseline) yang cepat, non-parametrik, dan mudah diinterpretasikan aturan pemisahannya.
 
-Mahasiswa **WAJIB** menggunakan minimal **tiga model** dengan komposisi sebagai berikut:
-#### **Model 1 – Baseline Model**
-Model sederhana sebagai pembanding dasar.
-Logistic RegressionAlasan: Logistic Regression adalah model yang sangat baik dan robust untuk klasifikasi biner dasar. Model ini mudah diinterpretasikan koefisien fiturnya (seperti pengaruh suhu terhadap probabilitas titik api) dan efisien dalam waktu pelatihan. Model ini memberikan garis dasar (baseline) kinerja linier sebelum beralih ke model yang lebih kompleks.
+#### **Model 2 – Advanced ML (Support Vector Machine - Kernel RBF)**
+Klasifikasi margin maksimal non-linear dengan kalibrasi probabilitas 5-Fold Cross-Validation (CalibratedClassifierCV) dan class_weight. Dipilih karena mampu memetakan interaksi kompleks antar-variabel iklim dalam ruang berdimensi tinggi.
 
-#### **Model 2 – Advanced / ML Model**
-Model machine learning yang lebih kompleks.
-Random ForestAlasan: Random Forest adalah algoritma ensemble tree-based yang kuat dalam menangani fitur non-linear dan interaksi fitur yang kompleks (seperti hubungan antara curah hujan, suhu, dan kelembapan). Model ini juga tahan terhadap outlier dan tidak memerlukan scaling data yang ketat. Model ini akan digunakan untuk meningkatkan akurasi dari baseline.
-
-#### **Model 3 – Deep Learning Model (WAJIB)**
-Model deep learning yang sesuai dengan jenis data.
-Multilayer Perceptron (MLP) / Neural Network (Untuk Tabular Data)
-Alasan: Data yang digunakan (cuaca dan titik api) setelah diproses akan berbentuk tabular dengan fitur-fitur numerik (seperti suhu maksimal, kelembapan, kecepatan angin). MLP dengan minimum 2 hidden layers dipilih karena kemampuannya mempelajari representasi fitur tingkat tinggi dan pola non-linear yang sangat kompleks dari data iklim yang tidak dapat ditangkap oleh Logistic Regression atau Random Forest. Model akan dievaluasi loss dan akurasinya selama >10 epochs.
+#### **Model 3 – Deep Learning (Multilayer Perceptron / MLP 128-64-32)**
+Jaringan saraf tiruan tabular berbasis PyTorch dengan 3 hidden layer (128 -> 64 -> 32 neuron), aktivasi ReLU, regularisasi Dropout (0.3, 0.3, 0.2), dan fungsi kerugian BCEWithLogitsLoss(pos_weight=9.007) yang dilatih selama 40 epoch.
 
 ---
 
