@@ -407,7 +407,7 @@ scale_pos_weight (XGBoost/LightGBM) = n0 / n1 = 9,007
 
 **Mengapa bukan SMOTE / undersampling?** (1) Baris adalah deret waktu dengan fitur rolling — sampel sintetis hasil interpolasi menghasilkan kombinasi hujan/riwayat yang tidak pernah terjadi, merusak koherensi temporal, dan membuat one-hot lokasi non-biner; (2) rasio 9:1 tergolong sedang, class weight + metrik PR-AUC/F1 memadai; (3) undersampling membuang ≈ 90% hari negatif. SMOTE dicatat sebagai kandidat iterasi di Bab 7.5 bila recall kelas positif rendah.
 
-![Distribusi kelas per split](reports/figures/fig07_distribusi_kelas_split.png)
+![Distribusi kelas per split](files/project/reports/figures/fig07_distribusi_kelas_split.png)
 
 ### 5.6 Ringkasan Data Preparation
 
@@ -461,7 +461,7 @@ y_val_proba = dt_baseline.predict_proba(X_val)[:, 1]y_pred_baseline = model_base
 
 #### 6.1.4 Optimization: Objective, Hyperparameter & Regularisasi  **[O]**
 
-**Objective/loss yang dioptimalkan: Gini impurity terbobot kelas (class_weight) pada tiap percabangan pohon.  
+Objective/loss yang dioptimalkan: Gini impurity terbobot kelas (class_weight) pada tiap percabangan pohon.  
 **Parameter yang digunakan:**
 ```
 - criterion: 'gini'
